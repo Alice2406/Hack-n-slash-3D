@@ -53,7 +53,7 @@ public:
     bool Contains(Polygon polygon, Vec2 point) const;
     bool SegmentInside(Vec2 from, Vec2 to) const;
     Path FindPath(Vec2 from, Vec2 to, Algorithm algorithm) const;
-
+    Portal* Between(int a, int b) const;
     // Le debug peut lire le résultat une fois construit par l'étudiant.
     const std::vector<Polygon>& Polygons() const { return polygons_; }
     const std::vector<Portal>& Portals() const { return portals_; }

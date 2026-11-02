@@ -7,10 +7,12 @@ struct Vec2 { double x=0, z=0; };
 inline Vec2 operator+(Vec2 a,Vec2 b){return {a.x+b.x,a.z+b.z};}
 inline Vec2 operator-(Vec2 a,Vec2 b){return {a.x-b.x,a.z-b.z};}
 inline Vec2 operator*(Vec2 a,double s){return {a.x*s,a.z*s};}
+inline Vec2 operator/(Vec2 a,double s){return {a.x/s,a.z/s};}
 inline double Dot(Vec2 a,Vec2 b){return a.x*b.x+a.z*b.z;}
 inline double Cross(Vec2 a,Vec2 b){return a.x*b.z-a.z*b.x;}
 inline double Length(Vec2 a){return std::hypot(a.x,a.z);}
 inline double Distance(Vec2 a,Vec2 b){return Length(a-b);}
+inline bool SamePoint(Vec2 a, Vec2 b) { return Distance(a, b) < 1e-8; }
 inline Vec2 Normalized(Vec2 a){double d=Length(a);return d>1e-10?a*(1/d):Vec2{};}
 inline bool Finite(Vec2 a){return std::isfinite(a.x)&&std::isfinite(a.z);}
 inline bool Near(Vec2 a,Vec2 b){return Distance(a,b)<1e-7;}
