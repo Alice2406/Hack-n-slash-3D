@@ -50,7 +50,7 @@ public:
     bool Build();
     bool IsBuilt() const { return built_; }
     int Locate(Vec2 point) const;
-    bool Contains(int polygon, Vec2 point) const;
+    bool Contains(Polygon polygon, Vec2 point) const;
     bool SegmentInside(Vec2 from, Vec2 to) const;
     Path FindPath(Vec2 from, Vec2 to, Algorithm algorithm) const;
 
