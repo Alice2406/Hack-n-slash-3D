@@ -17,6 +17,32 @@ bool NavMesh::Build() {
     if (polygons_.empty())
         return false;
 
+    for (int i = 0; i < polygons_.size(); i++)
+    {
+        std::vector<Vec2> pointspi = polygons_[i].vertices;
+        for (int edgepi = 0; edgepi < pointspi.size(); edgepi++)
+        {
+            Vec2 pointleftpi = pointspi[edgepi];
+            Vec2 pointrightpi = pointspi[(edgepi + 1) % pointspi.size()];
+            for (int j = i + 1; j < polygons_.size(); j++)
+            {
+                std::vector<Vec2> pointspj = polygons_[j].vertices;
+                for (int edgepj = 0; edgepj < pointspj.size(); edgepj++)
+                {
+                    Vec2 pointleftpj = pointspj[edgepj];
+                    Vec2 pointrightpj = pointspj[(edgepj + 1) % pointspj.size()];
+
+                    if (SamePoint(pointleftpi, pointleftpj) && SamePoint(pointrightpi, pointrightpj))
+                    {
+                        portals_.push_back({ i, j, pointleftpi, pointrightpi });
+                        break ;
+                    }
+                }
+
+            }
+        }
+    }
+
     graph_.resize(polygons_.size());
 
     for (Portal p : portals_)
@@ -25,7 +51,7 @@ bool NavMesh::Build() {
             throw std::invalid_argument("indice de portail invalides");
         if (Distance(p.p, p.q) < 1e-8)
             throw std::invalid_argument("longueur nulle");
-        if (!Contains(polygons_[p.a], p.p) || !Contains(polygons_[p.b], p.q))
+        if (!Contains(p.a, p.p) || !Contains(p.b, p.q))
             throw std::invalid_argument("extremite n'est pas dans la bonne region");
         Vec2 middle = (p.p + p.q) * 0.5;
         double cost = Distance(polygons_[p.a].center, middle) + Distance(middle, polygons_[p.b].center);
@@ -34,8 +60,7 @@ bool NavMesh::Build() {
     }
 
     built_ = true;
-    // TODO J3 : valider et structurer source_, calculer les adjacences/portails.
-    // Remplir polygons_, portals_, graph_, puis définir built_=true.
+
     return true;
 }
 
@@ -45,21 +70,23 @@ int NavMesh::Locate(Vec2 point) const {
 
     for (int i = 0; i < polygons_.size(); i++)
     {
-        if (Contains(polygons_[i], point))
+        if (Contains(i, point))
             return i;
     }
     return -1;
 }
 
-bool NavMesh::Contains(Polygon polygon, Vec2 point) const {
+bool NavMesh::Contains(int polygon, Vec2 point) const {
     double side;
+    Polygon pol;
+    pol = polygons_[polygon];
     bool positif = false;
     bool negatif = false;
     if (!Finite(point))
         throw std::invalid_argument("point non fini");
-    for (int i = 0; i < polygon.vertices.size(); i++)
+    for (int i = 0; i < pol.vertices.size(); i++)
     {
-        side = Cross((polygon.vertices[(i + 1) % polygon.vertices.size()]) - polygon.vertices[i], point - polygon.vertices[i]);
+        side = Cross((pol.vertices[(i + 1) % pol.vertices.size()]) - pol.vertices[i], point - pol.vertices[i]);
         if (side < -1e-8)
             negatif = true;
         else if (side > 1e-8)
@@ -69,9 +96,36 @@ bool NavMesh::Contains(Polygon polygon, Vec2 point) const {
 }
 
 bool NavMesh::SegmentInside(Vec2 from, Vec2 to) const {
-    // TODO J3 : vérifier qu'un segment reste dans la surface navigable.
-    (void)from;
-    (void)to;
+    if (!Finite(from) || !Finite(to)) return false;
+    std::vector<std::pair<double, double>> intervals;
+    const Vec2 direction = from - to;
+    for (const Polygon& polygon : polygons_) {
+        const auto& v = polygon.vertices;
+        double orientation = Cross(v[1] - v[0], v[2] - v[1]) > 0 ? 1.0 : -1.0;
+        double low = 0.0, high = 1.0;
+        bool valid = true;
+        for (std::size_t i = 0; i < v.size(); ++i) {
+            Vec2 edge = v[(i + 1) % v.size()] - v[i];
+            double base = orientation * Cross(edge, from - v[i]);
+            double slope = orientation * Cross(edge, direction);
+            if (std::abs(slope) < 1e-12) {
+                if (base < -1e-9) { valid = false; break; }
+            }
+            else {
+                double bound = (-1e-9 - base) / slope;
+                if (slope > 0) low = std::max(low, bound);
+                else high = std::min(high, bound);
+            }
+        }
+        if (valid && low <= high) intervals.push_back({ low,high });
+    }
+    std::sort(intervals.begin(), intervals.end());
+    double covered = 0.0;
+    for (auto [low, high] : intervals) {
+        if (low > covered + 1e-8) return false;
+        covered = std::max(covered, high);
+        if (covered >= 1.0 - 1e-8) return true;
+    }
     return false;
 }
 
