@@ -9,7 +9,7 @@ struct Spawn { Vec2 position;EnemyKind kind; };
 struct Wall { Box box;double height=1.5; };
 struct Level {
     std::string title;
-    double agentRadius=0.25;
+    double agentRadius = 0.25;
     Box bounds;
     Vec2 playerSpawn;
     std::vector<Spawn> spawns;

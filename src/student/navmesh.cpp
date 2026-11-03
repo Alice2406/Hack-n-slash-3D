@@ -1,4 +1,5 @@
 #include "cpe/navigation.hpp"
+#include "cpe/Level.hpp"
 #include <stdexcept>
 
 namespace cpe {
@@ -193,6 +194,15 @@ Path NavMesh::FindPath(Vec2 from, Vec2 to, Algorithm algorithm) const {
 
             if (portal == nullptr) {
                 return Path{};
+            }
+
+            double lengthPortal = Distance(portal->p, portal->q);
+            double lengthEnemy = 2 * (0.25 + 0.05);
+
+            if (lengthEnemy > lengthPortal)
+            {
+                result.search.status = Status::NoPath;
+                return result;
             }
 
             append((portal->p + portal->q) * 0.5);
