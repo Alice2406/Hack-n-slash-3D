@@ -33,7 +33,8 @@ bool NavMesh::Build() {
                     Vec2 pointleftpj = pointspj[edgepj];
                     Vec2 pointrightpj = pointspj[(edgepj + 1) % pointspj.size()];
 
-                    if (SamePoint(pointleftpi, pointleftpj) && SamePoint(pointrightpi, pointrightpj))
+                    if ((SamePoint(pointleftpi, pointrightpj) && SamePoint(pointrightpi, pointleftpj)) ||
+                        (SamePoint(pointleftpi, pointleftpj) && SamePoint(pointrightpi, pointrightpj)))
                     {
                         portals_.push_back({ i, j, pointleftpi, pointrightpi });
                         break ;
