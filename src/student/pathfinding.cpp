@@ -2,6 +2,7 @@
 #include <cmath>
 #include <limits>
 #include <queue>
+#include <functional>
 #include <utility>
 #include <algorithm>
 #include <chrono>
@@ -228,3 +229,4 @@ namespace cpe
         return finish();
     }
 }
+
