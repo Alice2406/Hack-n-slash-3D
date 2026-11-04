@@ -16,13 +16,14 @@ namespace cpe
         Vec2 lastTarget{};
         Vec2 lastPosition{};
 
-        double pathTimer = 0;
+        double requestCooldown = 0;
         double StuckTimer = 0;
 
         bool hasTarget = false;
         bool mustRecalculate = false;
-
-
+        void Tick(double dt);
+        void Clear();
+        bool Finished() const;
 
         void Invalidate();
         void Plan(const Level& level, Vec2 position, Vec2 target, Algorithm algorithm);
