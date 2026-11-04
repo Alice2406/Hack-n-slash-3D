@@ -3,15 +3,20 @@
 #include <cstddef>
 
 namespace cpe {
-struct Player { Vec2 position; Vec2 facing{0,-1}; };
+    struct Player { Vec2 position; Vec2 facing{ 0,-1 }; int hp = 100; };
 
 // Ce composant expose les données au debug ; le suivi est à implémenter.
 struct Navigator {
     Path path;
     std::size_t next = 0;
     std::size_t requests = 0;
+    double requestCooldown = 0;
+    bool hasTarget = false;
 
     void Invalidate();
+    void Tick(double dt);
+    void Clear();
+    bool Finished() const;
     void Plan(const Level& level, Vec2 position, Vec2 target, Algorithm algorithm);
     Vec2 Follow(const Level& level, Vec2 position, double speed, double dt);
 };
@@ -25,7 +30,11 @@ struct Enemy {
     EnemyKind kind = EnemyKind::Light;
     State state = State::Waiting;
     Navigator navigator;
+    int hp, damage, speed;
+    double detectRange, loseRange, attackRange, windupDuration, recoverDuration;
+    double timer = 0.0;
 };
+
 class Simulation {
 public:
     explicit Simulation(Level level);
@@ -36,6 +45,7 @@ public:
     double elapsed = 0;
 
     // Fourni : déplacement, collisions, boucle et appels des points d'extension.
+    void SetEnemy(Enemy& enemy);
     void Update(Vec2 movement, bool actionPressed, double dt);
     void Reset();
     void SetAlgorithm(Algorithm value);

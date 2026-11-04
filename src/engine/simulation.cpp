@@ -1,8 +1,24 @@
 #include "cpe/simulation.hpp"
 #include <utility>
+#include <iostream>
 
 namespace cpe {
 Simulation::Simulation(Level source) : level(std::move(source)) { Reset(); }
+
+void Simulation::SetEnemy(Enemy& enemy)
+{
+    if (enemy.kind == EnemyKind::Light || enemy.kind == EnemyKind::Heavy)
+    {
+        enemy.hp = 30;
+        enemy.damage = 10;
+        enemy.detectRange = 8.0;
+        enemy.loseRange = 10.0;
+        enemy.attackRange = 0.65;
+        enemy.windupDuration = 0.5;
+        enemy.recoverDuration = 0.8;
+        enemy.speed = 1.5;
+    }
+}
 
 void Simulation::Reset() {
     player = Player{};
@@ -13,6 +29,7 @@ void Simulation::Reset() {
         Enemy enemy;
         enemy.position = spawn.position;
         enemy.kind = spawn.kind;
+        SetEnemy(enemy);
         enemies.push_back(enemy);
     }
 }

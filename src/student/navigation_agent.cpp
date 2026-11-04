@@ -1,5 +1,18 @@
 #include "cpe/simulation.hpp"
+
 namespace cpe {
+void Navigator::Tick(double dt)
+{
+    requestCooldown = std::max(0.0, requestCooldown - dt);
+}
+
+void Navigator::Clear()
+{
+    path = Path{};
+    next = 0;
+    hasTarget = false;
+}
+
 void Navigator::Plan(const Level& level, Vec2 position,
                      Vec2 target, Algorithm algorithm) {
     // TODO J4 : gérer la requête, sa temporisation et les échecs.
