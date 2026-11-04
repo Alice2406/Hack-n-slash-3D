@@ -4,7 +4,7 @@
 
 namespace cpe 
 {
-    struct Player { Vec2 position; Vec2 facing{0,-1}; };
+    struct Player { Vec2 position; Vec2 facing{ 0,-1 }; int hp = 100; };
 
     // Ce composant expose les données au debug ; le suivi est à implémenter.
     struct Navigator 

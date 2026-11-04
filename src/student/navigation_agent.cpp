@@ -14,28 +14,15 @@ namespace cpe
         next = 0;
         hasTarget = false;
     }
+
+    bool Navigator::Finished() const 
+    { 
+        return next >= path.points.size(); 
+    }
+
     void Navigator::Plan(const Level& level, Vec2 position,
                          Vec2 target, Algorithm algorithm) 
     {
-        if (!Finite(position) || !Finite(target))
-        {
-            path = {};
-            next = 0;
-            hasTarget = false;
-            mustRecalculate = false;
-
-            return;
-        }
-
-        if (!level.navmesh.IsBuilt())
-        {
-            path = {};
-            next = 0;
-            mustRecalculate = false;
-
-            return;
-        }
-
         if (requestCooldown > 0.0) return;
 
         bool targetChanged = !hasTarget || Distance(target, lastTarget) > 0.75;
@@ -56,12 +43,13 @@ namespace cpe
 
     Vec2 Navigator::Follow(const Level& level, Vec2 position, double speed, double dt)
     {
-        if (path.search.status != Status::Found || dt <= 0)return;
+        if (path.search.status != Status::Found || dt <= 0) return position;
         double budget = speed * dt;
         while (!Finished() && budget > 0)
         {
             Vec2 delta = path.points[next] - position;
             double distance = Length(delta);
+            if (distance < 1e-8) { ++next; continue; }
             if (distance <= budget)
             {
                 position = path.points[next++];
@@ -71,9 +59,6 @@ namespace cpe
             {
                 position = position + delta * (budget / distance);
                 budget = 0;
-
-                //position = level.MoveSliding(position, level.displacement, level.agentRadius);
-                 
             }
         }
         return position;
