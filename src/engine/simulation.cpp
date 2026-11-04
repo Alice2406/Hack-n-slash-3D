@@ -16,7 +16,7 @@ void Simulation::SetEnemy(Enemy& enemy)
         enemy.attackRange = 0.65;
         enemy.windupDuration = 0.5;
         enemy.recoverDuration = 0.8;
-        enemy.speed = 1.5;
+        enemy.speed = 3;
     }
 }
 

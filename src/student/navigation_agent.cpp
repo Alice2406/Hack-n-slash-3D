@@ -25,7 +25,7 @@ namespace cpe
     {
         if (requestCooldown > 0.0) return;
 
-        bool targetChanged = !hasTarget || Distance(target, lastTarget) > 0.75;
+        bool targetChanged = !hasTarget || Distance(target, lastTarget) > 0.2;
         bool retry = path.search.status != Status::Found;
         bool stoppedFar = Finished() && Distance(position, target) > 0.1;
         

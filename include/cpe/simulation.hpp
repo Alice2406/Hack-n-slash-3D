@@ -39,7 +39,7 @@ namespace cpe
     {
         Vec2 position;
         EnemyKind kind = EnemyKind::Light;
-        State state = State::Waiting;
+        State state = State::Idle;
         Navigator navigator;
         int hp, damage, speed;
         double detectRange, loseRange, attackRange, windupDuration, recoverDuration;

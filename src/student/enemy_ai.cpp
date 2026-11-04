@@ -1,7 +1,9 @@
 #include "cpe/simulation.hpp"
+#include <iostream>
+
 namespace cpe {
 void Simulation::UpdateEnemy(Enemy& enemy, double dt) {
-	enemy.navigator.Tick(dt);
+    enemy.navigator.Tick(dt);
 
 	if (enemy.hp <= 0)
 	{
@@ -12,7 +14,7 @@ void Simulation::UpdateEnemy(Enemy& enemy, double dt) {
 	if (enemy.state == State::Dead)
 		return;
 	const double distance = Distance(enemy.position, player.position);
-	if (player.hp <= 0 || distance < enemy.loseRange)
+	if (player.hp <= 0 || distance > enemy.loseRange)
 	{
 		enemy.state = State::Idle;
 		enemy.navigator.Clear();
@@ -31,7 +33,7 @@ void Simulation::UpdateEnemy(Enemy& enemy, double dt) {
         }
         else {
             enemy.navigator.Plan(level, enemy.position, player.position, algorithm);
-            enemy.navigator.Follow(level, enemy.position, enemy.speed, dt);
+            enemy.position = enemy.navigator.Follow(level, enemy.position, enemy.speed, dt);
         }
         break;
     case State::Windup:
