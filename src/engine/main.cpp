@@ -175,6 +175,7 @@ int main(int argc, char** argv) {
                     sim->level.title.c_str(),cpe::Name(sim->algorithm),
                     sim->level.navmesh.IsBuilt()?"Construit":"A IMPLEMENTER"),25,55,18,LIGHTGRAY);
                 DrawText("Navigation, IA et gameplay : fonctions a completer dans src/student/",25,80,18,YELLOW);
+                //DrawText(TextFormat("PV Joueur : %d / 100", sim->player.hp), 25, 180, 18, GREEN);
                 if (hasProbe) {
                     DrawText(TextFormat("Sonde: %s | %d developpes | %.2f us",
                         cpe::Name(probe.search.status),probe.search.expanded,probe.queryMicroseconds),
@@ -198,3 +199,12 @@ int main(int argc, char** argv) {
         return 1;
     }
 }
+
+
+//Color enemyColor;
+//if (e.state == cpe::State::Windup) {
+//    enemyColor = RED;
+//}
+//else {
+//    enemyColor = heavy ? MAROON : ORANGE;
+//}

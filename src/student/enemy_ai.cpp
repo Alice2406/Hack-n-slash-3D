@@ -55,3 +55,59 @@ void Simulation::UpdateEnemy(Enemy& enemy, double dt) {
 }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//if (enemy.kind == EnemyKind::Light)
+//{
+//    enemy.hp = 20;
+//    enemy.damage = 8;
+//    enemy.speed = 3.5;
+//    enemy.radius = 0.15;
+//    enemy.detectRange = 8.0;
+//    enemy.loseRange = 12.0;
+//    enemy.attackRange = 4.0;
+//    enemy.windupDuration = 0.2;
+//    enemy.recoverDuration = 0.4;
+//}
+//else if (enemy.kind == EnemyKind::Heavy)
+//{
+//    enemy.hp = 80;
+//    enemy.damage = 25;
+//    enemy.speed = 1.2;
+//    enemy.radius = 0.35;
+//    enemy.detectRange = 6.0;
+//    enemy.loseRange = 10.0;
+//    enemy.attackRange = 1.0;
+//    enemy.windupDuration = 1.0;
+//    enemy.recoverDuration = 0.8;
+//}
+//enemy.state = State::Idle;
+
+
+//if (distance < 2.5 && enemy.kind == EnemyKind::Light) {
+//    Vec2 awayDir = Normalized(enemy.position - player.position);
+//    Vec2 fleeTarget = enemy.position + awayDir * 3.0;
+//    enemy.navigator.Plan(level, enemy.position, fleeTarget, algorithm);
+//    enemy.position = enemy.navigator.Follow(level, enemy.position, enemy.speed, dt);
+//}
