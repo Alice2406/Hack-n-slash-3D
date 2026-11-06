@@ -7,16 +7,29 @@ Simulation::Simulation(Level source) : level(std::move(source)) { Reset(); }
 
 void Simulation::SetEnemy(Enemy& enemy)
 {
-    if (enemy.kind == EnemyKind::Light || enemy.kind == EnemyKind::Heavy)
+    if (enemy.kind == EnemyKind::Light)
     {
-        enemy.hp = 30;
-        enemy.damage = 10;
+        enemy.hp = 20;
+        enemy.damage = 8;
+        enemy.speed = 3.5;
+        enemy.radius = 0.15;
         enemy.detectRange = 8.0;
+        enemy.loseRange = 12.0;
+        enemy.attackRange = 4.0;
+        enemy.windupDuration = 0.2;
+        enemy.recoverDuration = 0.4;
+    }
+    else if (enemy.kind == EnemyKind::Heavy)
+    {
+        enemy.hp = 80;
+        enemy.damage = 25;
+        enemy.speed = 1.2;
+        enemy.radius = 0.35;
+        enemy.detectRange = 6.0;
         enemy.loseRange = 10.0;
-        enemy.attackRange = 0.65;
-        enemy.windupDuration = 0.5;
+        enemy.attackRange = 1.0;
+        enemy.windupDuration = 1.0;
         enemy.recoverDuration = 0.8;
-        enemy.speed = 3;
     }
 }
 

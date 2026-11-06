@@ -159,7 +159,12 @@ int main(int argc, char** argv) {
             for (int i=0; i<static_cast<int>(sim->enemies.size()); ++i) {
                 const auto& e=sim->enemies[i];
                 bool heavy=e.kind==cpe::EnemyKind::Heavy;
-                DrawCylinder(World(e.position,0),radius,radius,heavy?.85f:.58f,heavy?6:10,heavy?MAROON:RED);
+                Color enemycolor;
+                if (e.state == cpe::State::Windup)
+                    enemycolor = RED;
+                else
+                    enemycolor = heavy ? YELLOW : BLUE;
+                DrawCylinder(World(e.position,0),radius,radius,heavy?.85f:.58f,heavy?6:10,enemycolor);
                 if (i==selected) DrawCircle3D(World(e.position,.08f),radius+.15f,{1,0,0},90,YELLOW);
                 if (showPaths && i==selected) DrawPath(e.navigator.path,MAGENTA);
             }
@@ -175,7 +180,7 @@ int main(int argc, char** argv) {
                     sim->level.title.c_str(),cpe::Name(sim->algorithm),
                     sim->level.navmesh.IsBuilt()?"Construit":"A IMPLEMENTER"),25,55,18,LIGHTGRAY);
                 DrawText("Navigation, IA et gameplay : fonctions a completer dans src/student/",25,80,18,YELLOW);
-                //DrawText(TextFormat("PV Joueur : %d / 100", sim->player.hp), 25, 180, 18, GREEN);
+                DrawText(TextFormat("PV Joueur : %d / 100", sim->player.hp), 20, 160, 20, GREEN);
                 if (hasProbe) {
                     DrawText(TextFormat("Sonde: %s | %d developpes | %.2f us",
                         cpe::Name(probe.search.status),probe.search.expanded,probe.queryMicroseconds),
@@ -199,12 +204,3 @@ int main(int argc, char** argv) {
         return 1;
     }
 }
-
-
-//Color enemyColor;
-//if (e.state == cpe::State::Windup) {
-//    enemyColor = RED;
-//}
-//else {
-//    enemyColor = heavy ? MAROON : ORANGE;
-//}

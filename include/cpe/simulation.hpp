@@ -42,7 +42,7 @@ namespace cpe
         State state = State::Idle;
         Navigator navigator;
         int hp, damage, speed;
-        double detectRange, loseRange, attackRange, windupDuration, recoverDuration;
+        double detectRange, loseRange, attackRange, windupDuration, recoverDuration, radius;
         double timer = 0.0;
     };
 
