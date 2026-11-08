@@ -11,7 +11,7 @@ void Simulation::SetEnemy(Enemy& enemy)
     {
         enemy.hp = 20;
         enemy.damage = 8;
-        enemy.speed = 3.5;
+        enemy.speed = 2.5;
         enemy.radius = 0.15;
         enemy.detectRange = 8.0;
         enemy.loseRange = 12.0;
@@ -38,13 +38,15 @@ void Simulation::Reset() {
     player.position = level.playerSpawn;
     enemies.clear();
     elapsed = 0;
-    for (const auto& spawn : level.spawns) {
-        Enemy enemy;
-        enemy.position = spawn.position;
-        enemy.kind = spawn.kind;
-        SetEnemy(enemy);
-        enemies.push_back(enemy);
-    }
+    currentWave = 1;
+    SpawnWave(currentWave);
+    //for (const auto& spawn : level.spawns) {
+    //    Enemy enemy;
+    //    enemy.position = spawn.position;
+    //    enemy.kind = spawn.kind;
+    //    SetEnemy(enemy);
+    //    enemies.push_back(enemy);
+    //}
 }
 
 void Simulation::SetAlgorithm(Algorithm value) {

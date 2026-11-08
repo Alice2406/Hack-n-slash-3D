@@ -56,6 +56,7 @@ static bool MouseGround(Camera3D camera, Vec2& result) {
     return true;
 }
 int main(int argc, char** argv) {
+    srand(time(NULL));
     try {
         fs::path dataOverride;
         bool smoke = false;
@@ -193,6 +194,14 @@ int main(int argc, char** argv) {
                     25,GetScreenHeight()-39,16,WHITE);
             }
             if (paused) DrawText("PAUSE",GetScreenWidth()/2-55,170,32,YELLOW);
+            if (sim->player.hp <= 0) {
+                DrawText("DEFAITE !", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 - 40, 50, RED);
+                DrawText("Appuyez sur 'R' pour recommencer", GetScreenWidth() / 2 - 180, GetScreenHeight() / 2 + 20, 20, WHITE);
+            }
+            else if (sim->currentWave > 3) {
+                DrawText("VICTOIRE !", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 - 40, 50, GREEN);
+                DrawText("Appuyez sur 'R' pour rejouer", GetScreenWidth() / 2 - 160, GetScreenHeight() / 2 + 20, 20, WHITE);
+            }
             EndDrawing();
             if (smoke && ++frames>=90) break;
         }

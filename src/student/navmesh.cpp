@@ -100,7 +100,7 @@ bool NavMesh::Contains(int polygon, Vec2 point) const {
 bool NavMesh::SegmentInside(Vec2 from, Vec2 to) const {
     if (!Finite(from) || !Finite(to)) return false;
     std::vector<std::pair<double, double>> intervals;
-    const Vec2 direction = from - to;
+    const Vec2 direction = to - from;
     for (const Polygon& polygon : polygons_) {
         const auto& v = polygon.vertices;
         double orientation = Cross(v[1] - v[0], v[2] - v[1]) > 0 ? 1.0 : -1.0;
@@ -156,14 +156,14 @@ Path NavMesh::FindPath(Vec2 from, Vec2 to, Algorithm algorithm) const {
         return result;
     }
 
-    auto h = [&](int n) -> double {
+    auto h = [&](int n) {
         return Distance(polygons_[n].center, polygons_[goalRegion].center);
         };
 
     if (algorithm == Algorithm::AStar) {
         std::vector<double> heuristic(polygons_.size());
-        for (std::size_t i = 0; i < polygons_.size(); ++i) {
-            heuristic[i] = h(static_cast<int>(i));
+        for (int i = 0; i < polygons_.size(); i++) {
+            heuristic[i] = h(i);
         }
         result.search = AStar(graph_, startRegion, goalRegion, heuristic);
     }

@@ -55,12 +55,15 @@ namespace cpe
         std::vector<Enemy> enemies;
         Algorithm algorithm = Algorithm::AStar;
         double elapsed = 0;
+        int currentWave = 1;
+        const int maxWaves = 3;
 
         // Fourni : déplacement, collisions, boucle et appels des points d'extension.
         void SetEnemy(Enemy& enemy);
         void Update(Vec2 movement, bool actionPressed, double dt);
         void Reset();
         void SetAlgorithm(Algorithm value);
+        void SpawnWave(int waveNumber);
         std::size_t RequestCount() const;
 
     private:

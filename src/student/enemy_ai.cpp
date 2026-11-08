@@ -27,16 +27,22 @@ namespace cpe {
             if (distance <= enemy.detectRange) enemy.state = State::Chase;
             break;
         case State::Chase:
-            if (distance < 2.5 && enemy.kind == EnemyKind::Light)
+            if (enemy.kind == EnemyKind::Light && distance < 3.0)
             {
-                Vec2 norme = Normalized(enemy.position - player.position);
-                Vec2 point = enemy.position + norme * 3.0;
-                enemy.navigator.Plan(level, enemy.position, point, algorithm);
-                enemy.position = enemy.navigator.Follow(level, enemy.position, enemy.speed, dt);
+                Vec2 fleeDir = Normalized(enemy.position - player.position);
+                Vec2 newPos = enemy.position + fleeDir * (enemy.speed * dt);
+
+                if (level.navmesh.SegmentInside(enemy.position, newPos)) {
+                    enemy.position = newPos;
+                }
+                enemy.navigator.path.search.status = cpe::Status::NoPath;
             }
             else if (distance <= enemy.attackRange && level.navmesh.SegmentInside(enemy.position, player.position)) {
                 enemy.state = State::Windup;
                 enemy.timer = enemy.windupDuration;
+                if (enemy.kind == EnemyKind::Heavy) {
+                    enemy.navigator.Clear();
+                }
             }
             else {
                 enemy.navigator.Plan(level, enemy.position, player.position, algorithm);

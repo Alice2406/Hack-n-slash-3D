@@ -43,7 +43,16 @@ namespace cpe
 
     Vec2 Navigator::Follow(const Level& level, Vec2 position, double speed, double dt)
     {
-        if (path.search.status != Status::Found || dt <= 0) return position;
+        if (path.search.status != Status::Found || dt <= 0 || path.points.empty()) return position;
+
+        if (level.navmesh.SegmentInside(position, path.points.back())) {
+            next = path.points.size() - 1;
+        }
+
+        else if (next + 1 < path.points.size() && level.navmesh.SegmentInside(position, path.points[next + 1])) {
+            next++;
+        }
+
         double budget = speed * dt;
         while (!Finished() && budget > 0)
         {
