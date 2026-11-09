@@ -12,7 +12,6 @@ void Simulation::SetEnemy(Enemy& enemy)
         enemy.hp = 20;
         enemy.damage = 8;
         enemy.speed = 2.5;
-        enemy.radius = 0.15;
         enemy.detectRange = 8.0;
         enemy.loseRange = 9.0;
         enemy.attackRange = 2.5;
@@ -24,7 +23,6 @@ void Simulation::SetEnemy(Enemy& enemy)
         enemy.hp = 80;
         enemy.damage = 25;
         enemy.speed = 1.2;
-        enemy.radius = 0.35;
         enemy.detectRange = 6.0;
         enemy.loseRange = 10.0;
         enemy.attackRange = 1.0;
@@ -68,5 +66,23 @@ void Simulation::Update(Vec2 movement, bool actionPressed, double dt) {
 
     UpdateGameplay(actionPressed, dt);
     for (auto& enemy : enemies) UpdateEnemy(enemy, dt);
+
+    for (std::size_t i = 0; i < enemies.size(); ++i) {
+        if (enemies[i].state == State::Dead) continue;
+
+        for (std::size_t j = i + 1; j < enemies.size(); ++j) {
+            if (enemies[j].state == State::Dead) continue;
+
+            double distance = Distance(enemies[i].position, enemies[j].position);
+			double minDist = 2 * level.agentRadius;
+
+            if (distance > 0 && distance < minDist) {
+                Vec2 dir = Normalized(enemies[i].position - enemies[j].position);
+                double overlap = minDist - distance;
+                enemies[i].position = enemies[i].position + dir * (overlap * 0.5);
+                enemies[j].position = enemies[j].position - dir * (overlap * 0.5);
+            }
+        }
+    }
 }
 }
