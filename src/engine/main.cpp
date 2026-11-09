@@ -16,7 +16,8 @@ static Vector3 World(Vec2 p, float y = .04f)
 
 static void DrawPolygon(const std::vector<Vec2>& vertices, Color color) 
 {
-    for (std::size_t i = 1; i + 1 < vertices.size(); ++i) {
+    for (std::size_t i = 1; i + 1 < vertices.size(); ++i)
+    {
         DrawTriangle3D(World(vertices[0]), World(vertices[i]), World(vertices[i+1]), color);
         DrawTriangle3D(World(vertices[0]), World(vertices[i+1]), World(vertices[i]), color);
     }
@@ -58,6 +59,7 @@ static fs::path FindData(const char* executable, const fs::path& overrideDir)
         if (fs::exists(path/"levels/arena.level")) return path;
     throw std::runtime_error("Cannot find data/. Use --data PATH.");
 }
+
 static bool MouseGround(Camera3D camera, Vec2& result) 
 {
     Ray ray = GetScreenToWorldRay(GetMousePosition(),camera);
@@ -85,6 +87,7 @@ int main(int argc, char** argv)
                 return 0;
             } else throw std::runtime_error("Unknown or incomplete option: "+arg);
         }
+
         const fs::path data=FindData(argv[0],dataOverride);
         auto sim=std::make_unique<cpe::Simulation>(cpe::Level::Load(data/"levels/arena.level"));
         bool showSurface=true,showPaths=true,showHud=true,paused=false,actionPending=false;
@@ -173,7 +176,8 @@ int main(int argc, char** argv)
                 float(bounds.max.x-bounds.min.x),.2f,
                 float(bounds.max.z-bounds.min.z),Color{98,107,115,255});
             if (showSurface) DrawNavigation(sim->level.navmesh);
-            for (const auto& wall : sim->level.walls) {
+            for (const auto& wall : sim->level.walls) 
+            {
                 Vec2 at=(wall.box.min+wall.box.max)*.5;
                 float sx=float(wall.box.max.x-wall.box.min.x);
                 float sz=float(wall.box.max.z-wall.box.min.z);
@@ -213,14 +217,11 @@ int main(int argc, char** argv)
                 DrawText("Navigation, IA et gameplay : fonctions a completer dans src/student/",25,80,18,YELLOW);
                 DrawText(TextFormat("PV Joueur : %d / 100", sim->player.hp), 20, 160, 20, GREEN);
 
-                for (int i = 0; i < static_cast<int>(sim->enemies.size()); i++)
+                if (!sim->enemies.empty())
                 {
-                    const auto& enemy = sim->enemies[i];
 
-                    int maxHp = enemy.kind == cpe::EnemyKind::Light ? 20 : 80;
-
-                    DrawText(TextFormat("PV Ennemi %d : %d / %d", i + 1, enemy.hp, maxHp),
-                        20, 190 + i * 30, 20, RED);
+                    const auto& target = sim->enemies[selected];
+                    DrawText(TextFormat("Ennemie selectionner : %s | vie %d", cpe::Name(target.state), target.hp), 25, 230, 20, RED);
                 }
 
                 if (hasProbe) 
