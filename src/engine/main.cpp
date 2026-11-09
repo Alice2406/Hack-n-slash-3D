@@ -107,13 +107,13 @@ int main(int argc, char** argv) {
                 sim->SetAlgorithm(sim->algorithm==cpe::Algorithm::AStar
                     ?cpe::Algorithm::Dijkstra:cpe::Algorithm::AStar);
                 if (hasProbe) probe=sim->level.navmesh.FindPath(
-                    sim->player.position,probeGoal,sim->algorithm);
+                    sim->player.position,probeGoal,sim->algorithm, sim->level.agentRadius);
             }
             Vec2 mouse;
             if (GetMouseY()>155 && MouseGround(camera,mouse)) {
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
                     hasProbe=true; probeGoal=mouse;
-                    probe=sim->level.navmesh.FindPath(sim->player.position,mouse,sim->algorithm);
+                    probe=sim->level.navmesh.FindPath(sim->player.position,mouse,sim->algorithm, sim->level.agentRadius);
                 }
                 if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
                     double best=1;

@@ -31,7 +31,7 @@ namespace cpe
         
         if (!targetChanged && !retry && !stoppedFar) return;
 
-        path = level.navmesh.FindPath(position, target, algorithm);
+        path = level.navmesh.FindPath(position, target, algorithm, level.agentRadius);
 
         next = path.points.size() > 1 ? 1 : path.points.size();
         lastTarget = target;

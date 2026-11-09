@@ -14,10 +14,10 @@ void Simulation::SetEnemy(Enemy& enemy)
         enemy.speed = 2.5;
         enemy.radius = 0.15;
         enemy.detectRange = 8.0;
-        enemy.loseRange = 12.0;
-        enemy.attackRange = 4.0;
+        enemy.loseRange = 9.0;
+        enemy.attackRange = 2.5;
         enemy.windupDuration = 0.2;
-        enemy.recoverDuration = 0.4;
+        enemy.recoverDuration = 1.0;
     }
     else if (enemy.kind == EnemyKind::Heavy)
     {
@@ -29,7 +29,7 @@ void Simulation::SetEnemy(Enemy& enemy)
         enemy.loseRange = 10.0;
         enemy.attackRange = 1.0;
         enemy.windupDuration = 1.0;
-        enemy.recoverDuration = 0.8;
+        enemy.recoverDuration = 1.0;
     }
 }
 
@@ -40,13 +40,7 @@ void Simulation::Reset() {
     elapsed = 0;
     currentWave = 1;
     SpawnWave(currentWave);
-    //for (const auto& spawn : level.spawns) {
-    //    Enemy enemy;
-    //    enemy.position = spawn.position;
-    //    enemy.kind = spawn.kind;
-    //    SetEnemy(enemy);
-    //    enemies.push_back(enemy);
-    //}
+
 }
 
 void Simulation::SetAlgorithm(Algorithm value) {

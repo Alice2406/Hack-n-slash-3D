@@ -27,7 +27,7 @@ namespace cpe {
             if (distance <= enemy.detectRange) enemy.state = State::Chase;
             break;
         case State::Chase:
-            if (enemy.kind == EnemyKind::Light && distance < 3.0)
+            if (enemy.kind == EnemyKind::Light && distance < 2.0)
             {
                 Vec2 fleeDir = Normalized(enemy.position - player.position);
                 Vec2 newPos = enemy.position + fleeDir * (enemy.speed * dt);
@@ -45,8 +45,13 @@ namespace cpe {
                 }
             }
             else {
-                enemy.navigator.Plan(level, enemy.position, player.position, algorithm);
-                enemy.position = enemy.navigator.Follow(level, enemy.position, enemy.speed, dt);
+                if (distance > enemy.loseRange)
+                    enemy.state = State::Idle;
+                else
+                {
+                    enemy.navigator.Plan(level, enemy.position, player.position, algorithm);
+                    enemy.position = enemy.navigator.Follow(level, enemy.position, enemy.speed, dt);
+                }
             }
             break;
         case State::Windup:

@@ -141,7 +141,7 @@ Portal* NavMesh::Between(int a, int b) const
     return nullptr;
 }
 
-Path NavMesh::FindPath(Vec2 from, Vec2 to, Algorithm algorithm) const {
+Path NavMesh::FindPath(Vec2 from, Vec2 to, Algorithm algorithm, int radius) const {
     Path result;
 
     if (!Finite(from) || !Finite(to)) {
@@ -198,7 +198,7 @@ Path NavMesh::FindPath(Vec2 from, Vec2 to, Algorithm algorithm) const {
             }
 
             double lengthPortal = Distance(portal->p, portal->q);
-            double lengthEnemy = 2 * (0.25 + 0.05);
+            double lengthEnemy = 2 * (radius + 0.05);
 
             if (lengthEnemy > lengthPortal)
             {

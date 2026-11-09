@@ -66,3 +66,9 @@ void Simulation::UpdateGameplay(bool actionPressed, double dt) {
     }
 }
 }
+
+
+//collision entre les ennemis 
+//dessiner la map 
+//test avec obstacles au milieu qui bloque les passages 
+
