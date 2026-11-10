@@ -221,7 +221,7 @@ int main(int argc, char** argv)
                 {
 
                     const auto& target = sim->enemies[selected];
-                    DrawText(TextFormat("Ennemie selectionner : %s | vie %d", cpe::Name(target.state), target.hp), 25, 230, 20, RED);
+                    DrawText(TextFormat("Ennemie selectionner : %s | vie %d", cpe::Name(target.state), target.hp), 18, 200, 20, RED);
                 }
 
                 if (hasProbe) 
@@ -233,7 +233,7 @@ int main(int argc, char** argv)
                 DrawText("F1 surfaces | F2 chemins | F3 HUD | Tab algo | N selection | F5 scene | P pause | R reset",
                     25,130,16,GRAY);
                 DrawRectangle(12,GetScreenHeight()-48,GetScreenWidth()-24,36,Fade(BLACK,.8f));
-                DrawText("ZQSD / WASD / fleches : bouger | Clic gauche : requete | Espace : point d'extension gameplay",
+                DrawText("ZQSD / WASD / fleches : bouger | Clic gauche : requete | Espace : attaque du joueur",
                     25,GetScreenHeight()-39,16,WHITE);
             }
 
