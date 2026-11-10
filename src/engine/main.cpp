@@ -56,7 +56,6 @@ static bool MouseGround(Camera3D camera, Vec2& result) {
     return true;
 }
 int main(int argc, char** argv) {
-    srand(time(NULL));
     try {
         fs::path dataOverride;
         bool smoke = false;
@@ -77,6 +76,10 @@ int main(int argc, char** argv) {
         Vec2 probeGoal;
         int scene=0,selected=0,frames=0;
         double accumulator=0;
+
+        InitAudioDevice();
+        Sound sound_attack = LoadSound("data/sounds/spring.wav");
+        Sound sound_dead = LoadSound("data/sounds/target.ogg");
 
         SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT);
         InitWindow(1280,800,"Campus Path Engine - Socle etudiant");
@@ -162,7 +165,10 @@ int main(int argc, char** argv) {
                 bool heavy=e.kind==cpe::EnemyKind::Heavy;
                 Color enemycolor;
                 if (e.state == cpe::State::Windup)
+                {
+                    PlaySound(sound_attack);
                     enemycolor = RED;
+                }
                 else
                     enemycolor = heavy ? YELLOW : BLUE;
                 DrawCylinder(World(e.position,0),radius,radius,heavy?.85f:.58f,heavy?6:10,enemycolor);
@@ -194,7 +200,13 @@ int main(int argc, char** argv) {
                     25,GetScreenHeight()-39,16,WHITE);
             }
             if (paused) DrawText("PAUSE",GetScreenWidth()/2-55,170,32,YELLOW);
+            bool isplayindsound = false;
             if (sim->player.hp <= 0) {
+                if (!isplayindsound)
+                {
+                    PlaySound(sound_dead);
+                    isplayindsound = true;
+                }
                 DrawText("DEFAITE !", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 - 40, 50, RED);
                 DrawText("Appuyez sur 'R' pour recommencer", GetScreenWidth() / 2 - 180, GetScreenHeight() / 2 + 20, 20, WHITE);
             }
@@ -213,3 +225,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 }
+
+//presentation du jeu
+//presentation des grands points de codes dans le jeu
+//questions 
