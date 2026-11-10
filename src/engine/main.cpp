@@ -189,7 +189,14 @@ int main(int argc, char** argv)
                 DrawCubeWires(World(at,float(wall.height*.5)),sx,float(wall.height),sz,Color{118,140,170,255});
             }
             float radius=float(sim->level.agentRadius);
-            DrawCylinder(World(sim->player.position,0),radius,radius,.7f,12,GREEN);
+            Color playercolor;
+            if (sim->player.hp <= 0)
+                playercolor = BLACK;
+            else if (IsKeyPressed(KEY_SPACE))
+                playercolor = PINK;
+            else
+                playercolor = GREEN;
+            DrawCylinder(World(sim->player.position,0),radius,radius,.7f,12, playercolor);
             DrawLine3D(World(sim->player.position,.8f),
                 World(sim->player.position+sim->player.facing*.7,.8f),WHITE);
             for (int i=0; i<static_cast<int>(sim->enemies.size()); ++i)
@@ -200,11 +207,14 @@ int main(int argc, char** argv)
                 if (e.state == cpe::State::Windup)
                 {
                     PlaySound(sound_attack);
-                    enemycolor = RED;
+                    enemycolor = WHITE;
                 }
+                else if (e.hp <= 0)
+                    enemycolor = BLACK;
                 else
                     enemycolor = heavy ? YELLOW : BLUE;
-                DrawCylinder(World(e.position,0),radius,radius,heavy?.85f:.58f,heavy?6:10,enemycolor);
+                if (e.hp > 0)
+                    DrawCylinder(World(e.position,0),radius,radius,heavy?.85f:.58f,heavy?6:10,enemycolor);
                 if (i==selected) DrawCircle3D(World(e.position,.08f),radius+.15f,{1,0,0},90,YELLOW);
                 if (showPaths && i==selected) DrawPath(e.navigator.path,MAGENTA);
             }
@@ -274,6 +284,14 @@ int main(int argc, char** argv)
     }
 }
 
+
+//changer les audios
+//afficher les degats joueur et ennemis
+//changement de map en fonction de la wave
+//docs
+
+
+//oral
 //presentation du jeu
 //presentation des grands points de codes dans le jeu
 //questions 

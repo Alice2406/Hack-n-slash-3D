@@ -91,5 +91,3 @@ void Simulation::UpdateGameplay(bool actionPressed, double dt) {
 }
 }
 
-//dessiner la map 
-//audio pour les ennemis
