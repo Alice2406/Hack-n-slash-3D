@@ -15,7 +15,7 @@ void Simulation::SetEnemy(Enemy& enemy)
         enemy.detectRange = 8.0;
         enemy.loseRange = 9.0;
         enemy.attackRange = 2.5;
-        enemy.windupDuration = 0.2;
+        enemy.windupDuration = 0.5;
         enemy.recoverDuration = 1.0;
     }
     else if (enemy.kind == EnemyKind::Heavy)

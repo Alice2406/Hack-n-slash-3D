@@ -96,10 +96,17 @@ int main(int argc, char** argv)
         Vec2 probeGoal;
         int scene=0,selected=0,frames=0;
         double accumulator=0;
+        bool playerDeadSoundPlayed = false;
+        int lastPlayerHp = sim->player.hp;
+        double playerFlashTimer = 0.0;
+        std::vector<int> lastEnemyHps;
+        std::vector<double> enemyFlashTimers;
+        std::vector<cpe::State> lastEnemyStates;
+        int lastLoadedWave = -1;
 
         InitAudioDevice();
         Sound sound_attack = LoadSound("data/sounds/spring.wav");
-        Sound sound_dead = LoadSound("data/sounds/target.ogg");
+        Sound sound_dead = LoadSound("data/sounds/gameover.mp3");
 
         SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT);
         InitWindow(1280,800,"Campus Path Engine - Socle etudiant");
@@ -113,20 +120,42 @@ int main(int argc, char** argv)
         {
             double frame=std::min(static_cast<double>(GetFrameTime()),.1);
             if (smoke) frame=1.0/60;
+            if (sim->currentWave != lastLoadedWave) {
+                lastLoadedWave = sim->currentWave;
+                std::string mapName = "arena.level";
+                if (sim->currentWave == 2) mapName = "pillars.level";
+                else if (sim->currentWave >= 3) mapName = "tricky.level";
+
+                int currentPlayerHp = sim->player.hp;
+                auto next = std::make_unique<cpe::Simulation>(cpe::Level::Load(data / "levels" / mapName));
+                next->SetAlgorithm(sim->algorithm);
+                next->currentWave = sim->currentWave;
+                next->player.hp = currentPlayerHp;
+                next->SpawnWave(next->currentWave);
+                sim = std::move(next);
+                selected = 0;
+                hasProbe = false;
+            }
             if (IsKeyPressed(KEY_F1)) showSurface=!showSurface;
             if (IsKeyPressed(KEY_F2)) showPaths=!showPaths;
             if (IsKeyPressed(KEY_F3)) showHud=!showHud;
             if (IsKeyPressed(KEY_P)) { paused=!paused; accumulator=0; actionPending=false; }
             if (IsKeyPressed(KEY_N) && !sim->enemies.empty())
                 selected=(selected+1)%static_cast<int>(sim->enemies.size());
-            if (IsKeyPressed(KEY_R)) { sim->Reset(); selected=0; hasProbe=false; }
+            if (IsKeyPressed(KEY_R)) { sim->Reset(); selected=0; hasProbe=false; bool playerDeadSoundPlayed = false;}
             if (IsKeyPressed(KEY_F5)) 
             {
-                int nextScene=1-scene;
-                auto next=std::make_unique<cpe::Simulation>(
-                    cpe::Level::Load(data/"levels"/(nextScene?"pillars.level":"arena.level")));
+                scene = (scene + 1) % 3;
+                std::string mapName = "arena.level";
+                if (scene == 1) mapName = "pillars.level";
+                else if (scene == 2) mapName = "tricky.level";
+
+                auto next = std::make_unique<cpe::Simulation>(
+                    cpe::Level::Load(data / "levels" / mapName));
                 next->SetAlgorithm(sim->algorithm);
-                sim=std::move(next); scene=nextScene; selected=0; hasProbe=false;
+                sim = std::move(next);
+                selected = 0;
+                hasProbe = false;
             }
             if (IsKeyPressed(KEY_TAB)) 
             {
@@ -172,6 +201,33 @@ int main(int argc, char** argv)
                 }
             }
 
+			// flash timer pour la couleur du joueur et des ennemis quand ils prennent des degats
+            if (playerFlashTimer > 0) playerFlashTimer -= frame;
+            if (sim->player.hp < lastPlayerHp) {
+				playerFlashTimer = 0.2;
+            }
+            lastPlayerHp = sim->player.hp;
+
+            if (enemyFlashTimers.size() != sim->enemies.size()) 
+            {
+                enemyFlashTimers.resize(sim->enemies.size(), 0.0);
+                lastEnemyHps.resize(sim->enemies.size());
+                lastEnemyStates.resize(sim->enemies.size());
+                for (int i = 0; i < sim->enemies.size(); ++i) 
+                {
+                    lastEnemyHps[i] = sim->enemies[i].hp;
+                    lastEnemyStates[i] = sim->enemies[i].state;
+                }
+            }
+
+            for (int i = 0; i < sim->enemies.size(); ++i) {
+                if (enemyFlashTimers[i] > 0) enemyFlashTimers[i] -= frame;
+                if (sim->enemies[i].hp < lastEnemyHps[i]) {
+                    enemyFlashTimers[i] = 0.2;
+                }
+                lastEnemyHps[i] = sim->enemies[i].hp;
+            }
+
             BeginDrawing();
             ClearBackground(Color{21,26,36,255});
             BeginMode3D(camera);
@@ -192,8 +248,8 @@ int main(int argc, char** argv)
             Color playercolor;
             if (sim->player.hp <= 0)
                 playercolor = BLACK;
-            else if (IsKeyPressed(KEY_SPACE))
-                playercolor = PINK;
+            else if (playerFlashTimer > 0)
+                playercolor = RED;
             else
                 playercolor = GREEN;
             DrawCylinder(World(sim->player.position,0),radius,radius,.7f,12, playercolor);
@@ -204,15 +260,17 @@ int main(int argc, char** argv)
                 const auto& e=sim->enemies[i];
                 bool heavy=e.kind==cpe::EnemyKind::Heavy;
                 Color enemycolor;
-                if (e.state == cpe::State::Windup)
+                if (e.state == cpe::State::Windup && lastEnemyStates[i] != cpe::State::Windup)
                 {
-                    PlaySound(sound_attack);
-                    enemycolor = WHITE;
+                        PlaySound(sound_attack);
                 }
-                else if (e.hp <= 0)
+                if (e.hp <= 0)
                     enemycolor = BLACK;
+                else if (enemyFlashTimers[i] > 0)
+                    enemycolor = RED;
                 else
                     enemycolor = heavy ? YELLOW : BLUE;
+                lastEnemyStates[i] = e.state;
                 if (e.hp > 0)
                     DrawCylinder(World(e.position,0),radius,radius,heavy?.85f:.58f,heavy?6:10,enemycolor);
                 if (i==selected) DrawCircle3D(World(e.position,.08f),radius+.15f,{1,0,0},90,YELLOW);
@@ -255,17 +313,18 @@ int main(int argc, char** argv)
             }
 
             if (paused) DrawText("PAUSE",GetScreenWidth()/2-55,170,32,YELLOW);
-            bool isplayindsound = false;
             if (sim->player.hp <= 0) {
-                if (!isplayindsound)
+                if (!playerDeadSoundPlayed)
                 {
                     PlaySound(sound_dead);
-                    isplayindsound = true;
+                    playerDeadSoundPlayed = true;
                 }
                 DrawText("DEFAITE !", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 - 40, 50, RED);
                 DrawText("Appuyez sur 'R' pour recommencer", GetScreenWidth() / 2 - 180, GetScreenHeight() / 2 + 20, 20, WHITE);
             }
-            else if (sim->currentWave > 3) {
+            else
+				playerDeadSoundPlayed = false;
+            if (sim->currentWave > 3) {
                 DrawText("VICTOIRE !", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 - 40, 50, GREEN);
                 DrawText("Appuyez sur 'R' pour rejouer", GetScreenWidth() / 2 - 160, GetScreenHeight() / 2 + 20, 20, WHITE);
             }
@@ -285,9 +344,6 @@ int main(int argc, char** argv)
 }
 
 
-//changer les audios
-//afficher les degats joueur et ennemis
-//changement de map en fonction de la wave
 //docs
 
 

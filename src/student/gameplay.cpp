@@ -62,16 +62,24 @@ void Simulation::UpdateGameplay(bool actionPressed, double dt) {
             double distance = Distance(player.position, enemies[i].position);
             if (distance < attackRange)
             {
-                enemies[i].hp -= 10;
-                if (enemies[i].hp < 0)
-                {
-                    enemies[i].hp = 0;
-                    enemies[i].state = State::Dead;
-                    continue;
+                Vec2 toEnemy = enemies[i].position - player.position;
+                if (Length(toEnemy) > 1e-6) {
+                    toEnemy = Normalized(toEnemy);
+
+                    if (Dot(player.facing, toEnemy) > 0.4)
+                    {
+                        enemies[i].hp -= 10;
+                        if (enemies[i].hp <= 0)
+                        {
+                            enemies[i].hp = 0;
+                            enemies[i].state = State::Dead;
+                            continue;
+                        }
+                    }
                 }
             }
         }
-    }
+	}
 
     bool allDead = true;
     for (const auto& enemy : enemies) {
@@ -82,11 +90,13 @@ void Simulation::UpdateGameplay(bool actionPressed, double dt) {
     }
 
     if (allDead && !enemies.empty()) {
-        currentWave++;
-        if (currentWave <= 3)
+        if (currentWave < 3) {
+            currentWave++;
             SpawnWave(currentWave);
-        else
-            return;
+        }
+        else {
+            currentWave = 4;
+        }
     }
 }
 }
