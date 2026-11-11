@@ -142,7 +142,7 @@ int main(int argc, char** argv)
             if (IsKeyPressed(KEY_P)) { paused=!paused; accumulator=0; actionPending=false; }
             if (IsKeyPressed(KEY_N) && !sim->enemies.empty())
                 selected=(selected+1)%static_cast<int>(sim->enemies.size());
-            if (IsKeyPressed(KEY_R)) { sim->Reset(); selected=0; hasProbe=false; bool playerDeadSoundPlayed = false;}
+            if (IsKeyPressed(KEY_R)) { sim->Reset(); selected=0; hasProbe=false; playerDeadSoundPlayed = false;}
             if (IsKeyPressed(KEY_F5)) 
             {
                 scene = (scene + 1) % 3;
@@ -302,7 +302,7 @@ int main(int argc, char** argv)
                 if (hasProbe) 
                 {
                     DrawText(TextFormat("Sonde: %s | %d developpes | %.2f us",
-                        cpe::Name(probe.search.status),probe.search.expanded,probe.queryMicroseconds),
+                        cpe::Name(probe.search.status),probe.search.expanded,probe.search.microseconds),
                         25,105,18,SKYBLUE);
                 }
                 DrawText("F1 surfaces | F2 chemins | F3 HUD | Tab algo | N selection | F5 scene | P pause | R reset",
@@ -322,9 +322,7 @@ int main(int argc, char** argv)
                 DrawText("DEFAITE !", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 - 40, 50, RED);
                 DrawText("Appuyez sur 'R' pour recommencer", GetScreenWidth() / 2 - 180, GetScreenHeight() / 2 + 20, 20, WHITE);
             }
-            else
-				playerDeadSoundPlayed = false;
-            if (sim->currentWave > 3) {
+            else if (sim->currentWave > 3) {
                 DrawText("VICTOIRE !", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 - 40, 50, GREEN);
                 DrawText("Appuyez sur 'R' pour rejouer", GetScreenWidth() / 2 - 160, GetScreenHeight() / 2 + 20, 20, WHITE);
             }
