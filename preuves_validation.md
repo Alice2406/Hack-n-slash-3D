@@ -45,7 +45,6 @@
 
 ## 4. Contribution des Membres
 
-### Repartition des Contributions
 * **Alice** :
   - Navmesh
   - Comportements des ennemis
