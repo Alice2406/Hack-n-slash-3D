@@ -25,7 +25,7 @@ namespace cpe
     {
         if (requestCooldown > 0.0) return;
 
-        bool targetChanged = !hasTarget || Distance(target, lastTarget) > 0.2;
+        bool targetChanged = !hasTarget || Distance(target, lastTarget) > 0.5;
         bool retry = path.search.status != Status::Found;
         bool stoppedFar = Finished() && Distance(position, target) > 0.1;
         
@@ -36,7 +36,7 @@ namespace cpe
         next = path.points.size() > 1 ? 1 : path.points.size();
         lastTarget = target;
         hasTarget = true;
-        requestCooldown = 0.3;
+        requestCooldown = 0.5;
 
         ++requests;
     }
@@ -45,14 +45,11 @@ namespace cpe
     {
         if (path.search.status != Status::Found || dt <= 0 || path.points.empty()) return position;
 
-        if (level.navmesh.SegmentInside(position, path.points.back())) {
-            next = path.points.size() - 1;
-        }
-
-        else if (next + 1 < path.points.size() && level.navmesh.SegmentInside(position, path.points[next + 1])) {
+        double distanceToCurrent = Distance(position, path.points[next]);
+        if (distanceToCurrent < 0.3 && next + 1 < path.points.size())
+        {
             next++;
         }
-
         double budget = speed * dt;
         while (!Finished() && budget > 0)
         {

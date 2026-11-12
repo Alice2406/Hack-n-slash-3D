@@ -185,7 +185,6 @@ Path NavMesh::FindPath(Vec2 from, Vec2 to, Algorithm algorithm, int radius) cons
     append(from);
 
     if (startRegion != goalRegion) {
-        append(polygons_[startRegion].center);
 
         for (std::size_t i = 1; i < result.search.nodes.size(); ++i) {
             const int previous = result.search.nodes[i - 1];

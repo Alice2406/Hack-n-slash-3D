@@ -9,9 +9,9 @@ void Simulation::SetEnemy(Enemy& enemy)
 {
     if (enemy.kind == EnemyKind::Light)
     {
-        enemy.hp = 20;
+        enemy.hp = 40;
         enemy.damage = 8;
-        enemy.speed = 2.5;
+        enemy.speed = 2.7;
         enemy.detectRange = 8.0;
         enemy.loseRange = 9.0;
         enemy.attackRange = 2.5;
@@ -21,12 +21,12 @@ void Simulation::SetEnemy(Enemy& enemy)
     else if (enemy.kind == EnemyKind::Heavy)
     {
         enemy.hp = 80;
-        enemy.damage = 25;
-        enemy.speed = 1.2;
+		enemy.damage = 15;
+        enemy.speed = 1.5;
         enemy.detectRange = 6.0;
         enemy.loseRange = 10.0;
         enemy.attackRange = 1.0;
-        enemy.windupDuration = 1.0;
+        enemy.windupDuration = 0.8;
         enemy.recoverDuration = 1.0;
     }
 }
@@ -79,8 +79,16 @@ void Simulation::Update(Vec2 movement, bool actionPressed, double dt) {
             if (distance > 0 && distance < minDist) {
                 Vec2 dir = Normalized(enemies[i].position - enemies[j].position);
                 double overlap = minDist - distance;
-                enemies[i].position = enemies[i].position + dir * (overlap * 0.5);
-                enemies[j].position = enemies[j].position - dir * (overlap * 0.5);
+
+                Vec2 posi = enemies[i].position + dir * (overlap * 0.5);
+                Vec2 posj = enemies[j].position - dir * (overlap * 0.5);
+
+                if (level.CanStand(posi, level.agentRadius)) {
+                    enemies[i].position = posi;
+                }
+                if (level.CanStand(posj, level.agentRadius)) {
+                    enemies[j].position = posj;
+                }
             }
         }
     }

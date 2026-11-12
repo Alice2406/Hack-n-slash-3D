@@ -143,6 +143,9 @@ int main(int argc, char** argv)
             if (IsKeyPressed(KEY_N) && !sim->enemies.empty())
                 selected=(selected+1)%static_cast<int>(sim->enemies.size());
             if (IsKeyPressed(KEY_R)) { sim->Reset(); selected=0; hasProbe=false; playerDeadSoundPlayed = false;}
+            if (IsKeyPressed(KEY_V)) {
+                sim->currentWave++;
+			} //cheat to skip to next wave
             if (IsKeyPressed(KEY_F5)) 
             {
                 scene = (scene + 1) % 3;
@@ -196,7 +199,11 @@ int main(int argc, char** argv)
                 accumulator+=frame;
                 while (accumulator>=1.0/60) 
                 {
+                    int playerHpBefore = sim->player.hp;
                     sim->Update(movement,actionPending,1.0/60);
+                    if (sim->player.hp < playerHpBefore) {
+                        PlaySound(sound_attack);
+                    }
                     actionPending=false; accumulator-=1.0/60;
                 }
             }
@@ -260,10 +267,6 @@ int main(int argc, char** argv)
                 const auto& e=sim->enemies[i];
                 bool heavy=e.kind==cpe::EnemyKind::Heavy;
                 Color enemycolor;
-                if (e.state == cpe::State::Windup && lastEnemyStates[i] != cpe::State::Windup)
-                {
-                        PlaySound(sound_attack);
-                }
                 if (e.hp <= 0)
                     enemycolor = BLACK;
                 else if (enemyFlashTimers[i] > 0)
@@ -296,7 +299,7 @@ int main(int argc, char** argv)
                 {
 
                     const auto& target = sim->enemies[selected];
-                    DrawText(TextFormat("Ennemie selectionner : %s | vie %d", cpe::Name(target.state), target.hp), 18, 200, 20, RED);
+                    DrawText(TextFormat("Ennemie selectionne : %s | vie %d", cpe::Name(target.state), target.hp), 18, 200, 20, RED);
                 }
 
                 if (hasProbe) 
@@ -340,12 +343,3 @@ int main(int argc, char** argv)
         return 1;
     }
 }
-
-
-//docs
-
-
-//oral
-//presentation du jeu
-//presentation des grands points de codes dans le jeu
-//questions 

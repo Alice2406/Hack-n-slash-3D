@@ -70,16 +70,16 @@ static int NavMeshContract() {
     Check(mesh.SegmentInside({1,1},{5,1}),"horizontal segment inside the surface");
     Check(!mesh.SegmentInside({1,1},{5,5}),"do not cut the L corner");
     for (auto algorithm : {cpe::Algorithm::Dijkstra,cpe::Algorithm::AStar}) {
-        auto path=mesh.FindPath({1,1},{5,5},algorithm);
+        auto path=mesh.FindPath({1,1},{5,5},algorithm, 0.25);
         Check(path.search.status==cpe::Status::Found,"route through L");
         Check(!path.points.empty(),"non-empty geometric route");
         Check(cpe::Near(path.points.front(),{1,1}) && cpe::Near(path.points.back(),{5,5}),
             "geometric endpoints");
         for (std::size_t i=1;i<path.points.size();++i)
             Check(mesh.SegmentInside(path.points[i-1],path.points[i]),"valid route segments");
-        Check(mesh.FindPath({1,1},{9,1},algorithm).search.status==cpe::Status::NoPath,
+        Check(mesh.FindPath({1,1},{9,1},algorithm, 0.25).search.status==cpe::Status::NoPath,
             "disconnected island");
-        Check(mesh.FindPath({1,1},{3,3},algorithm).search.status==cpe::Status::OutsideNavMesh,
+        Check(mesh.FindPath({1,1},{3,3},algorithm, 0.25).search.status==cpe::Status::OutsideNavMesh,
             "outside destination");
     }
     std::cout << "PASS - NavMesh result contract\n";

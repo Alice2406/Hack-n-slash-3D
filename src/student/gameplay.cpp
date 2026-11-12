@@ -7,9 +7,9 @@ namespace cpe {
         enemies.clear();
 
         int enemyCount = 0;
-        if (waveNumber == 1) enemyCount = 3;
-        else if (waveNumber == 2) enemyCount = 6;
-        else if (waveNumber == 3) enemyCount = 10;
+        if (waveNumber == 1) enemyCount = 5;
+        else if (waveNumber == 2) enemyCount = 7;
+        else if (waveNumber == 3) enemyCount = 13;
 
         for (int i = 0; i < enemyCount; ++i) {
             Enemy e;
